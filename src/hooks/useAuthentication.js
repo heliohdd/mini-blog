@@ -1,4 +1,4 @@
-import {db} from '../firebase/config';
+import { db } from "../firebase/config";
 
 import {
   getAuth,
@@ -25,6 +25,7 @@ export const useAuthentication = () => {
     }
   }
 
+  // Register
   const createUser = async (data) => {
     checkIfIsCancelled();
 
@@ -42,26 +43,32 @@ export const useAuthentication = () => {
       });
 
       setLoading(false);
-      
+
       return user;
     } catch (error) {
       console.log(error.message);
       console.log(typeof error.message);
 
-        let systemErrorMessage
+      let systemErrorMessage;
 
-        if (error.message.includes("Password")) {
-          systemErrorMessage = "A senha precisa conter pelo menos 6 caracteres.";
-        } else if (error.message.includes("email-already")) {
-          systemErrorMessage = "E-mail já cadastrado.";
-        } else {
-          systemErrorMessage = "Ocorreu um erro, por favor tente mais tarde.";
-        }
+      if (error.message.includes("Password")) {
+        systemErrorMessage = "A senha precisa conter pelo menos 6 caracteres.";
+      } else if (error.message.includes("email-already")) {
+        systemErrorMessage = "E-mail já cadastrado.";
+      } else {
+        systemErrorMessage = "Ocorreu um erro, por favor tente mais tarde.";
+      }
 
-        setLoading(false);
-        setError(systemErrorMessage);
+      setLoading(false);
+      setError(systemErrorMessage);
     }
+  };
 
+  // Logout - signout
+  const logout = () => {
+    checkIfIsCancelled();
+    
+    signOut(auth);
   };
 
   useEffect(() => {
@@ -73,5 +80,6 @@ export const useAuthentication = () => {
     createUser,
     error,
     loading,
+    logout
   };
 };
