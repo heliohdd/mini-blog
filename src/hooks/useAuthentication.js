@@ -30,6 +30,7 @@ export const useAuthentication = () => {
     checkIfIsCancelled();
 
     setLoading(true);
+
     setError(null);
     try {
       const { user } = await createUserWithEmailAndPassword(
@@ -59,16 +60,50 @@ export const useAuthentication = () => {
         systemErrorMessage = "Ocorreu um erro, por favor tente mais tarde.";
       }
 
-      setLoading(false);
       setError(systemErrorMessage);
     }
+    setLoading(false);
   };
 
-  // Logout - signout
+  // Logout - sign out
   const logout = () => {
     checkIfIsCancelled();
-    
+
     signOut(auth);
+  };
+
+  // Login - sign in
+  const login = async (data) => {
+    checkIfIsCancelled();
+
+    setLoading(true);
+    setError(false);
+
+    try {
+      await signInWithEmailAndPassword(auth, data.email, data.password);
+      setLoading(false);
+    } catch (error) {
+      console.log(error.message);
+      console.log(typeof error.message);
+      console.log(error.message.includes("user-not"));
+
+      let systemErrorMessage;
+
+      if (error.message.includes("user-not-found")) {
+        systemErrorMessage = "Usuário não encontrado.";
+      } else if (error.message.includes("auth/invalid-credential")) {
+        // Analisar porque não devolve mensagem de erro de "Usuário não encontrado."
+        // systemErrorMessage = "Senha incorreta.";
+        systemErrorMessage = "Usuário não encontrado ou senha incorreta.";
+      } else {
+        systemErrorMessage = "Ocorreu um erro, por favor tente mais tarde.";
+      }
+
+      console.log(systemErrorMessage);
+
+      setError(systemErrorMessage);
+    }
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -80,6 +115,7 @@ export const useAuthentication = () => {
     createUser,
     error,
     loading,
-    logout
+    logout,
+    login,
   };
 };
